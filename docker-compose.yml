@@ -1,0 +1,88 @@
+services:
+  # ----------------------------------------------------
+  # PayTrack Golang API Service & Automated Sync Cron
+  # ----------------------------------------------------
+  paytrack-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: paytrack-backend
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:8080"
+    env_file:
+      - .env
+    environment:
+      - PORT=8080
+      - DB_DRIVER=${DB_DRIVER:-postgres}
+      - DB_DSN=host=postgres user=${POSTGRES_USER:-postgres} password=${POSTGRES_PASSWORD:-postgres} dbname=${POSTGRES_DB:-paytrack} port=5432 sslmode=disable
+      - DB_PATH=/app/data/paytrack.db
+      - SYNC_WORKERS=${SYNC_WORKERS:-5}
+      - OLLAMA_BASE_URL=http://ollama:11434
+    volumes:
+      - paytrack_data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
+
+  # ----------------------------------------------------
+  # PostgreSQL Database Service (Production Scale)
+  # ----------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: paytrack-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-paytrack}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-paytrack}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ----------------------------------------------------
+  # Local Ollama LLM Service (Zero-cloud AI inference)
+  # ----------------------------------------------------
+  ollama:
+    image: ollama/ollama:latest
+    container_name: paytrack-ollama
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  # ----------------------------------------------------
+  # Auto-Pull Model Initializer (Runs once on first startup)
+  # ----------------------------------------------------
+  ollama-init:
+    image: curlimages/curl:latest
+    container_name: paytrack-ollama-init
+    depends_on:
+      - ollama
+    entrypoint: >
+      sh -c "
+        echo 'Waiting for Ollama engine to be ready...'
+        until curl -s http://ollama:11434/api/tags > /dev/null; do
+          sleep 2
+        done
+        echo 'Ollama is ready! Ensuring model ${OLLAMA_MODEL:-qwen2.5:3b} is pulled...'
+        curl -s -X POST http://ollama:11434/api/pull -d '{\"name\": \"${OLLAMA_MODEL:-qwen2.5:3b}\"}'
+        echo 'Model ready! Launching PayTrack backend...'
+      "
+
+volumes:
+  paytrack_data:
+    driver: local
+  postgres_data:
+    driver: local
+  ollama_data:
+    driver: local

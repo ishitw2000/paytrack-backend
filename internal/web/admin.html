@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PayTrack AI — Admin System Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #090d16;
+      --bg-surface: rgba(18, 26, 43, 0.75);
+      --bg-card: rgba(26, 38, 64, 0.65);
+      --bg-card-hover: rgba(33, 49, 82, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.3);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.25);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.2);
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #a855f7;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.1) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #38bdf8, #6366f1);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: #fff;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .brand-text h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--success);
+    }
+
+    .status-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    button.btn-primary {
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    button.btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--primary-glow);
+    }
+
+    button.btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .main-container {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem;
+      flex: 1;
+    }
+
+    /* Tabs */
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 2rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.75rem 1.25rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--primary);
+      box-shadow: 0 0 12px var(--primary);
+    }
+
+    /* Metric Grid */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--card-accent, var(--primary)), transparent);
+    }
+
+    .metric-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 0.35rem;
+    }
+
+    /* Section Cards */
+    .content-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-glass);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .pill-success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .pill-failed { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .pill-running { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .pill-category { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-md);
+      background: rgba(18, 26, 43, 0.95);
+      border: 1px solid var(--primary);
+      color: #fff;
+      font-size: 0.875rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 1000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .code-tag {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(0,0,0,0.3);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      color: var(--primary);
+    }
+
+    /* Expandable Row Styles */
+    .tx-row {
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .tx-row:hover td {
+      background: rgba(56, 189, 248, 0.05);
+    }
+    .tx-row.expanded td {
+      background: rgba(56, 189, 248, 0.08);
+      border-bottom-color: transparent;
+    }
+    .chevron-icon {
+      display: inline-block;
+      transition: transform 0.2s ease;
+      color: var(--primary);
+      font-size: 0.8rem;
+    }
+    .tx-row.expanded .chevron-icon {
+      transform: rotate(90deg);
+    }
+    .tx-detail-row {
+      display: none;
+      background: rgba(18, 26, 43, 0.9);
+    }
+    .tx-detail-row.open {
+      display: table-row;
+    }
+    .tx-detail-row td {
+      padding: 0 1rem 1.25rem 1rem;
+      border-bottom: 1px solid var(--border-accent);
+    }
+    .detail-card {
+      background: rgba(26, 38, 64, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .detail-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .detail-summary-box {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 3px solid var(--primary);
+      padding: 0.75rem 1rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #fff;
+    }
+    .detail-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .meta-label {
+      color: var(--text-dim);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+    }
+    .meta-val {
+      color: var(--text-main);
+      font-weight: 500;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="logo-icon">P</div>
+      <div class="brand-text">
+        <h1>PayTrack Admin</h1>
+        <p>Real-Time Platform & AI Synchronization Engine</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="status-badge" id="llm-indicator">
+        <span class="status-pulse"></span>
+        <span id="llm-badge-text">LLM: Checking...</span>
+      </div>
+      <button class="btn-primary" id="btn-sync-all" onclick="triggerGlobalSync()">
+        <span>⚡</span> Sync All Mailboxes
+      </button>
+    </div>
+  </header>
+
+  <div class="main-container">
+
+    <!-- KPI Metric Cards -->
+    <div class="metric-grid">
+      <div class="metric-card" style="--card-accent: #38bdf8;">
+        <div class="metric-label">Registered Users</div>
+        <div class="metric-value" id="kpi-users">0</div>
+        <div class="metric-sub" id="kpi-mailboxes">0 connected mailboxes</div>
+      </div>
+
+      <div class="metric-card" style="--card-accent: #10b981;">
+        <div class="metric-label">Total Money Tracked</div>
+        <div class="metric-value" id="kpi-volume">$0.00</div>
+        <div class="metric-sub" id="kpi-expenses">0 total transactions</div>
+      </div>
+
+      <div class="metric-card" style="--card-accent: #a855f7;">
+        <div class="metric-label">24h Sync Success Rate</div>
+        <div class="metric-value" id="kpi-success-rate">100%</div>
+        <div class="metric-sub" id="kpi-24h-syncs">0 sync runs last 24h</div>
+      </div>
+
+      <div class="metric-card" style="--card-accent: #f59e0b;">
+        <div class="metric-label">Worker Pool & Database</div>
+        <div class="metric-value" id="kpi-db">SQLITE</div>
+        <div class="metric-sub" id="kpi-workers">5 parallel workers</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('tab-sync')">🔄 Live Sync Monitor</button>
+      <button class="tab-btn" onclick="switchTab('tab-transactions')">💳 Global Transactions Feed</button>
+      <button class="tab-btn" onclick="switchTab('tab-users')">👥 Users & Connected Inboxes</button>
+      <button class="tab-btn" onclick="switchTab('tab-system')">⚙️ System & Engine Config</button>
+    </div>
+
+    <!-- TAB 1: Live Sync Monitor -->
+    <div id="tab-sync" class="tab-content active">
+      <div class="content-card">
+        <div class="card-header">
+          <div class="card-title">Recent Mailbox Sync Executions</div>
+          <span class="code-tag" id="cron-schedule-tag">Cron: 4x Daily (0 0,6,12,18 * * *)</span>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User / Account</th>
+                <th>Trigger</th>
+                <th>Status</th>
+                <th>Emails Scanned</th>
+                <th>Payments Found</th>
+                <th>Saved</th>
+                <th>Error Message</th>
+              </tr>
+            </thead>
+            <tbody id="sync-logs-body">
+              <tr><td colspan="8" style="text-align:center; color: var(--text-dim);">Loading sync logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Global Transactions Feed -->
+    <div id="tab-transactions" class="tab-content">
+      <div class="content-card">
+        <div class="card-header">
+          <div class="card-title">Live Extracted Payments & Receipts Stream</div>
+          <span class="code-tag">Click any row to expand full email summary & why/how details</span>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 28px;"></th>
+                <th>Date</th>
+                <th>User</th>
+                <th>Merchant</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Payment Method</th>
+                <th>AI Confidence</th>
+                <th>Summary Preview</th>
+              </tr>
+            </thead>
+            <tbody id="transactions-body">
+              <tr><td colspan="9" style="text-align:center; color: var(--text-dim);">Loading transactions...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Users & Connected Mailboxes -->
+    <div id="tab-users" class="tab-content">
+      <div class="content-card">
+        <div class="card-header">
+          <div class="card-title">Registered Users & Mailbox Inventory</div>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Email</th>
+                <th>Full Name</th>
+                <th>Connected Inboxes</th>
+                <th>Total Expenses</th>
+                <th>Total Spent</th>
+                <th>Joined At</th>
+              </tr>
+            </thead>
+            <tbody id="users-body">
+              <tr><td colspan="7" style="text-align:center; color: var(--text-dim);">Loading users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: System Config -->
+    <div id="tab-system" class="tab-content">
+      <div class="content-card">
+        <div class="card-header">
+          <div class="card-title">Platform & Local AI Engine Architecture</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+          <div style="background: rgba(0,0,0,0.25); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+            <h3 style="font-size: 1rem; color: var(--primary); margin-bottom: 0.75rem;">🤖 Local LLM Engine</h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Engine: <strong id="sys-llm-engine" style="color: #fff;">Ollama</strong></p>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Model: <strong id="sys-llm-model" style="color: #fff;">llama3.2</strong></p>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">Status: <span id="sys-llm-status" class="pill pill-success">CONNECTED</span></p>
+          </div>
+          <div style="background: rgba(0,0,0,0.25); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+            <h3 style="font-size: 1rem; color: var(--success); margin-bottom: 0.75rem;">🗄️ Database & Concurrency</h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Driver: <strong id="sys-db-driver" style="color: #fff;">SQLite / Postgres</strong></p>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Parallel Workers: <strong id="sys-workers" style="color: #fff;">5 goroutines</strong></p>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">Server Uptime: <strong id="sys-uptime" style="color: #fff;">0s</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast" class="toast">Operation completed</div>
+
+  <script>
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+      event.currentTarget.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/v1/admin/stats');
+        const data = await res.json();
+
+        document.getElementById('kpi-users').textContent = data.total_users || 0;
+        document.getElementById('kpi-mailboxes').textContent = `${data.total_mailboxes || 0} connected mailboxes`;
+        document.getElementById('kpi-volume').textContent = `$${(data.total_volume_tracked || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+        document.getElementById('kpi-expenses').textContent = `${data.total_expenses || 0} total transactions`;
+        document.getElementById('kpi-success-rate').textContent = `${data.last_24h_success_rate || 100}%`;
+        document.getElementById('kpi-24h-syncs').textContent = `${data.last_24h_syncs_count || 0} syncs last 24h`;
+        document.getElementById('kpi-db').textContent = (data.database_driver || 'SQLITE').toUpperCase();
+        document.getElementById('kpi-workers').textContent = `${data.active_sync_workers || 5} parallel workers`;
+
+        const llmIndicator = document.getElementById('llm-indicator');
+        const llmText = document.getElementById('llm-badge-text');
+        if (data.llm_status === 'CONNECTED') {
+          llmIndicator.style.background = 'rgba(16, 185, 129, 0.15)';
+          llmIndicator.style.color = '#10b981';
+          llmText.textContent = `LLM: ${data.llm_model} (Ready)`;
+        } else {
+          llmIndicator.style.background = 'rgba(245, 158, 11, 0.15)';
+          llmIndicator.style.color = '#f59e0b';
+          llmText.textContent = 'LLM: Heuristics Active';
+        }
+
+        document.getElementById('sys-llm-engine').textContent = data.llm_engine;
+        document.getElementById('sys-llm-model').textContent = data.llm_model;
+        document.getElementById('sys-llm-status').textContent = data.llm_status;
+        document.getElementById('sys-db-driver').textContent = data.database_driver.toUpperCase();
+        document.getElementById('sys-workers').textContent = `${data.active_sync_workers} concurrent goroutines`;
+        
+        const uptimeMins = Math.floor((data.server_uptime_seconds || 0) / 60);
+        document.getElementById('sys-uptime').textContent = `${uptimeMins} minutes`;
+      } catch (err) {
+        console.error("Error loading stats:", err);
+      }
+    }
+
+    async function loadSyncLogs() {
+      try {
+        const res = await fetch('/api/v1/admin/sync-logs');
+        const logs = await res.json();
+        const tbody = document.getElementById('sync-logs-body');
+
+        if (!logs || logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-dim);">No sync executions recorded yet.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = logs.map(l => {
+          const pillClass = l.status === 'SUCCESS' ? 'pill-success' : (l.status === 'RUNNING' ? 'pill-running' : 'pill-failed');
+          const timeStr = new Date(l.started_at).toLocaleString();
+          return `
+            <tr>
+              <td><span class="code-tag">${timeStr}</span></td>
+              <td>User #${l.user_id} (Acc #${l.account_id || '-'})</td>
+              <td><span class="code-tag">${l.trigger_type}</span></td>
+              <td><span class="pill ${pillClass}">${l.status}</span></td>
+              <td>${l.emails_processed}</td>
+              <td><strong style="color: var(--primary);">${l.payments_found}</strong></td>
+              <td><strong style="color: var(--success);">${l.new_expenses_saved}</strong></td>
+              <td style="color: var(--danger); font-size: 0.75rem;">${l.error_message || '—'}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error("Error loading sync logs:", err);
+      }
+    }
+
+    // Track currently expanded rows to preserve state across auto-refreshes
+    const expandedRows = new Set();
+
+    function toggleTxDetail(id) {
+      const row = document.getElementById(`tx-row-${id}`);
+      const detailRow = document.getElementById(`tx-detail-${id}`);
+      if (!row || !detailRow) return;
+
+      if (expandedRows.has(id)) {
+        expandedRows.delete(id);
+        row.classList.remove('expanded');
+        detailRow.classList.remove('open');
+      } else {
+        expandedRows.add(id);
+        row.classList.add('expanded');
+        detailRow.classList.add('open');
+      }
+    }
+
+    function getCurrencySymbol(curr) {
+      if (!curr) return '₹';
+      const c = curr.toUpperCase();
+      if (c === 'INR') return '₹';
+      if (c === 'USD') return '$';
+      if (c === 'EUR') return '€';
+      if (c === 'GBP') return '£';
+      return curr + ' ';
+    }
+
+    async function loadTransactions() {
+      try {
+        const res = await fetch('/api/v1/admin/transactions');
+        const txs = await res.json();
+        const tbody = document.getElementById('transactions-body');
+
+        if (!txs || txs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color: var(--text-dim);">No transactions parsed yet.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = txs.map(t => {
+          const dateStr = new Date(t.date).toLocaleDateString();
+          const confPct = Math.round((t.confidence_score || 1.0) * 100);
+          const sym = getCurrencySymbol(t.currency);
+          const isExpanded = expandedRows.has(t.id);
+          const rowClass = isExpanded ? 'tx-row expanded' : 'tx-row';
+          const detailClass = isExpanded ? 'tx-detail-row open' : 'tx-detail-row';
+          const displaySummary = t.summary && t.summary.trim() !== '' ? t.summary : (t.raw_subject || 'No summary available');
+
+          return `
+            <tr id="tx-row-${t.id}" class="${rowClass}" onclick="toggleTxDetail(${t.id})">
+              <td style="text-align: center;"><span class="chevron-icon">▶</span></td>
+              <td>${dateStr}</td>
+              <td><span class="code-tag">User #${t.user_id}</span></td>
+              <td><strong>${t.merchant || 'Unknown'}</strong></td>
+              <td><strong style="color: var(--success);">${sym}${t.amount.toFixed(2)}</strong> <span style="font-size:0.75rem; color:var(--text-dim);">${t.currency}</span></td>
+              <td><span class="pill pill-category">${t.category}</span></td>
+              <td>${t.payment_method || 'Card'}</td>
+              <td><span class="code-tag">${confPct}%</span></td>
+              <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-muted); font-size: 0.8rem;">${displaySummary}</td>
+            </tr>
+            <tr id="tx-detail-${t.id}" class="${detailClass}">
+              <td colspan="9">
+                <div class="detail-card">
+                  <div class="detail-section-title">
+                    <span>💡</span> Why & How This Payment Was Made (AI Summary)
+                  </div>
+                  <div class="detail-summary-box">
+                    ${displaySummary}
+                  </div>
+                  <div class="detail-meta-grid">
+                    <div class="meta-item">
+                      <span class="meta-label">Original Email Subject</span>
+                      <span class="meta-val">${t.raw_subject || '—'}</span>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-label">Sender Email / Provider</span>
+                      <span class="meta-val">${t.sender || '—'}</span>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-label">Payment Channel & Type</span>
+                      <span class="meta-val">${t.payment_method || 'Unknown'} &bull; <span class="code-tag">${t.transaction_type || 'DEBIT'}</span></span>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-label">Message ID / UID</span>
+                      <span class="meta-val code-tag" style="font-size: 0.7rem;">${t.message_id || ('UID ' + (t.email_uid || 'N/A'))}</span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error("Error loading transactions:", err);
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        const res = await fetch('/api/v1/admin/users');
+        const users = await res.json();
+        const tbody = document.getElementById('users-body');
+
+        if (!users || users.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-dim);">No users registered yet.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = users.map(u => {
+          const joinedStr = new Date(u.created_at).toLocaleDateString();
+          const inboxes = u.accounts && u.accounts.length > 0 
+            ? u.accounts.map(a => `<span class="code-tag">${a.provider}: ${a.email_address}</span>`).join(' ')
+            : '<span style="color: var(--text-dim);">None</span>';
+
+          return `
+            <tr>
+              <td>#${u.id}</td>
+              <td><strong>${u.email}</strong></td>
+              <td>${u.full_name || '—'}</td>
+              <td>${inboxes}</td>
+              <td>${u.expenses_count}</td>
+              <td><strong style="color: var(--success);">$${u.total_spent.toFixed(2)}</strong></td>
+              <td>${joinedStr}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error("Error loading users:", err);
+      }
+    }
+
+    async function triggerGlobalSync() {
+      const btn = document.getElementById('btn-sync-all');
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> Syncing...';
+      try {
+        const res = await fetch('/api/v1/admin/sync-all', { method: 'POST' });
+        const data = await res.json();
+        showToast(data.message || 'Global sync initiated in background!');
+        setTimeout(() => {
+          loadStats();
+          loadSyncLogs();
+        }, 1500);
+      } catch (err) {
+        showToast('Error triggering sync: ' + err.message);
+      } finally {
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<span>⚡</span> Sync All Mailboxes';
+        }, 2000);
+      }
+    }
+
+    function refreshAll() {
+      loadStats();
+      loadSyncLogs();
+      loadTransactions();
+      loadUsers();
+    }
+
+    // Initial load
+    refreshAll();
+
+    // Auto-refresh every 6 seconds
+    setInterval(refreshAll, 6000);
+  </script>
+</body>
+</html>

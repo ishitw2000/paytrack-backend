@@ -1,0 +1,103 @@
+# PayTrack Dynamic Merchant Registry
+# Format: MerchantName:Category
+
+BESCOM:Utilities & Bills
+Ola:Transportation
+Yatra:Travel & Transport
+IndiGo:Travel & Transport
+Subway:Food & Dining
+YouTube Premium:Entertainment & Subscriptions
+Adani Electricity:Utilities & Bills
+Nature's Basket:Groceries & Essentials
+Amazon Prime:Entertainment & Subscriptions
+DigitalOcean:Software & Cloud
+Tata CLiQ:Shopping
+Vercel:Software & Cloud
+Blinkit:Groceries & Essentials
+Apollo Pharmacy:Healthcare & Pharmacy
+Indraprastha Gas:Utilities & Bills
+PhonePe:Digital Wallet / UPI
+Apple Services:Entertainment & Subscriptions
+AWS:Software & Cloud
+Airtel:Utilities & Telecom
+BillDesk:Payment Gateway
+Tata Power:Utilities & Bills
+PVR Cinemas:Entertainment & Subscriptions
+Netmeds:Healthcare & Pharmacy
+BookMyShow:Entertainment & Subscriptions
+Anthropic:Software & Cloud
+Cleartrip:Travel & Transport
+MakeMyTrip:Travel & Transport
+McDonalds:Food & Dining
+PharmEasy:Healthcare & Pharmacy
+Practo:Healthcare & Pharmacy
+Netflix:Entertainment & Subscriptions
+GitHub:Software & Cloud
+Uber:Transportation
+Zepto:Groceries & Essentials
+Vi:Utilities & Telecom
+Rapido:Transportation
+ChatGPT:Software & Cloud
+IOCL:Fuel & Gas
+Vodafone Idea:Utilities & Telecom
+Mahanagar Gas:Utilities & Bills
+BigBasket:Groceries & Essentials
+Zee5:Entertainment & Subscriptions
+Cult.fit:Health & Fitness
+JioMart:Groceries & Essentials
+HPCL:Fuel & Gas
+Amazon:Shopping
+Google Pay:Digital Wallet / UPI
+Air India:Travel & Transport
+OpenAI:Software & Cloud
+Spotify:Entertainment & Subscriptions
+Nykaa:Shopping
+Reliance Digital:Shopping
+Zara:Shopping
+Croma:Shopping
+EatSure:Food & Dining
+EaseMyTrip:Travel & Transport
+Swiggy:Food & Dining
+Decathlon:Shopping
+Starbucks:Food & Dining
+Apple:Shopping
+Google Cloud:Software & Cloud
+Paytm:Digital Wallet / UPI
+ACT Fibernet:Utilities & Bills
+CRED:Credit Card Bill & Finance
+Instamart:Groceries & Essentials
+Meesho:Shopping
+PayU:Payment Gateway
+Myntra:Shopping
+Lenskart:Shopping
+Razorpay:Payment Gateway
+BPCL:Fuel & Gas
+RedBus:Travel & Transport
+H&M:Shopping
+Sony LIV:Entertainment & Subscriptions
+Zomato:Food & Dining
+Dominos:Food & Dining
+IKEA:Shopping
+Dunzo:Groceries & Essentials
+Ajio:Shopping
+DoorDash:Food & Dining
+Burger King:Food & Dining
+IRCTC:Travel & Transport
+AbhiBus:Travel & Transport
+Goibibo:Travel & Transport
+Uniqlo:Shopping
+Cashfree:Payment Gateway
+Google Play:Entertainment & Subscriptions
+Pizza Hut:Food & Dining
+Vistara:Travel & Transport
+Jio:Utilities & Telecom
+INOX:Entertainment & Subscriptions
+Disney+ Hotstar:Entertainment & Subscriptions
+KFC:Food & Dining
+Chaayos:Food & Dining
+1mg:Healthcare & Pharmacy
+Uber Eats:Food & Dining
+Flipkart:Shopping
+Chai Point:Food & Dining
+Akasa Air:Travel & Transport
+DMart:Groceries & Essentials

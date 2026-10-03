@@ -1,0 +1,7 @@
+bin/
+*.db
+*.db-journal
+.DS_Store
+.git/
+.gitignore
+.env
