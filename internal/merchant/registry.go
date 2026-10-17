@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 )
@@ -251,8 +252,14 @@ func (r *Registry) saveToFile() {
 	_, _ = writer.WriteString("# PayTrack Dynamic Merchant Registry\n")
 	_, _ = writer.WriteString("# Format: MerchantName:Category\n\n")
 
-	for m, c := range r.merchants {
-		_, _ = writer.WriteString(formatMerchantName(m) + ":" + c + "\n")
+	keys := make([]string, 0, len(r.merchants))
+	for m := range r.merchants {
+		keys = append(keys, m)
+	}
+	sort.Strings(keys)
+
+	for _, m := range keys {
+		_, _ = writer.WriteString(formatMerchantName(m) + ":" + r.merchants[m] + "\n")
 	}
 	_ = writer.Flush()
 }
