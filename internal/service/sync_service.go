@@ -20,6 +20,7 @@ type SyncService struct {
 	db         *gorm.DB
 	imapClient *email.IMAPClient
 	extractor  *llm.PaymentExtractor
+	dedup      *DeduplicationEngine
 	mu         sync.Mutex
 	isSyncing  bool
 	lastSyncAt *time.Time
@@ -31,6 +32,7 @@ func NewSyncService(cfg *config.Config, db *gorm.DB) *SyncService {
 		db:         db,
 		imapClient: email.NewIMAPClient(cfg),
 		extractor:  llm.NewPaymentExtractor(cfg),
+		dedup:      NewDeduplicationEngine(db, 12*time.Hour),
 	}
 }
 
@@ -84,9 +86,9 @@ func (s *SyncService) SyncUserAccount(ctx context.Context, account *models.Email
 	newSaved := 0
 
 	for _, em := range emails {
+		// Layer 1: Fast exact message-id check before expensive AI extraction
 		if em.MessageID != "" {
-			var existing models.Expense
-			if err := s.db.Where("user_id = ? AND message_id = ?", account.UserID, em.MessageID).First(&existing).Error; err == nil {
+			if isDup, _ := s.dedup.CheckMessageID(account.UserID, em.MessageID); isDup {
 				continue
 			}
 		}
@@ -105,15 +107,8 @@ func (s *SyncService) SyncUserAccount(ctx context.Context, account *models.Email
 			}
 		}
 
-		// Deduplication check per user
-		var dup models.Expense
-		if err := s.db.Where("user_id = ? AND amount = ? AND merchant = ? AND date BETWEEN ? AND ?",
-			account.UserID,
-			extracted.Amount,
-			extracted.Merchant,
-			txDate.Add(-12*time.Hour),
-			txDate.Add(12*time.Hour),
-		).First(&dup).Error; err == nil {
+		// Layer 2: Sliding-window fuzzy deduplication (same merchant/amount within ±12h)
+		if isDup, _, _ := s.dedup.CheckFuzzyDuplicate(account.UserID, extracted.Amount, extracted.Merchant, txDate); isDup {
 			continue
 		}
 
