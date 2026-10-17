@@ -1,0 +1,35 @@
+name: CI - Go Test & Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run Tests & Race Detector
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+
+      - name: Verify Dependencies
+        run: |
+          go mod download
+          go mod verify
+
+      - name: Run Unit & Integration Tests
+        run: go test -v -race -coverprofile=coverage.out ./...
+
+      - name: Benchmark Heuristic Engine
+        run: go test -bench=BenchmarkHeuristicExtract -benchmem ./internal/llm/...
+
+      - name: Build Server Binary
+        run: go build -v -o bin/paytrack-server ./cmd/server
